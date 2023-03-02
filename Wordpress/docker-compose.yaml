@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  # Database
+  wp-playground-db:
+    image: mysql:5.7
+    container_name: mysql
+    restart: unless-stopped
+    volumes:
+      - wp-playground-db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpressclient
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - wordpress-playground
+  # phpmyadmin
+  wp-playground-phpmyadmin:
+    depends_on:
+      - wp-playground-db
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - '8080:80'
+    environment:
+      - PMA_HOST=wp-playground-db
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - wordpress-playground
+  # Wordpress
+  wp-playground-wordpress:
+    depends_on:
+      - wp-playground-db
+    image: wordpress:latest
+    container_name: wordpress
+    restart: unless-stopped
+    ports:
+      - '8000:80'
+    volumes: 
+      - 'wp-playground/:/var/www/html'
+    environment:
+      - WORDPRESS_DB_HOST=wp-playground-db:3306
+      - WORDPRESS_DB_USER=wordpressclient
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+    networks:
+      - wordpress-playground
+networks:
+  wordpress-playground:
+volumes:
+  wp-playground-db-data:
+  wp-playground:

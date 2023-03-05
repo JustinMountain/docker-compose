@@ -1,30 +1,5 @@
-# Docker Compose
+# Docker Compose 
 
-Passwords are stored inside .env files sibling to the each docker-compose.yaml:
+This is where I'm storing the docker-compose.yaml files for all of my homelab services. 
 
-```
-# .env
-TZ=America/New_York
-
-# docker-compose.yaml
-TZ=${TZ}
-
-# Check correct association for passwords from inside directory with
-docker compose convert
-```
-
-## Deluge
-
-
-
-## Jellyfin
-
-
-
-## Pi-hole
-
-
-
-## Wordpress
-
-
+If you're interested in learning more about my process, please see my project documention on [my personal site](https://justinmountain.github.io/personal-blog/posts/running-docker-in-my-homelab).

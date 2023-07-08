@@ -1,35 +1,33 @@
-# Following exactly this before deleting above
-
 version: '3'
 
 services:
   database:
-    image: postgres:alpine
-    container_name: postgres
+    image: postgres:alpine3.18
+    container_name: nc-postgres
     network_mode: bridge
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
     volumes:
-      - db-postgres:/var/lib/postgresql/data:z
+      - nc-db-postgres:/var/lib/postgresql/data:z
     restart: unless-stopped
 
   cache:
-    image: redis:alpine
-    container_name: redis
+    image: redis:alpine3.18
+    container_name: nc-redis
     network_mode: bridge
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - cache-redis:/data
+      - nc-cache-redis:/data
     depends_on:
       - database
     restart: unless-stopped
 
   app:
-    image: lscr.io/linuxserver/nextcloud:latest
-    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud:26.0.2
+    container_name: nc-nextcloud
     network_mode: bridge
     environment:
       - PUID=1000
@@ -41,9 +39,9 @@ services:
       - REDIS_HOST=cache
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - ./nextcloud-config:/config
-      - app-data:/data
-      - app-nextcloud:/var/www/html
+      - ./config:/config
+      - ./data:/data
+      - nc-app-nextcloud:/var/www/html
     ports:
       - 443:443
     depends_on:
@@ -52,15 +50,15 @@ services:
     restart: unless-stopped
 
   web:
-    image: lscr.io/linuxserver/nginx:latest
-    container_name: nginx
+    image: lscr.io/linuxserver/nginx:1.24.0
+    container_name: nc-nginx
     network_mode: bridge
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - web-nginx:/config
+      - nc-web-nginx:/config
     volumes_from:
       - app
     depends_on:
@@ -68,11 +66,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  db-postgres:
-  cache-redis:
-  app-data:
-  app-nextcloud:
-  web-nginx:
-
-
-# container names need prefix
+  nc-db-postgres:
+  nc-cache-redis:
+  nc-app-nextcloud:
+  nc-web-nginx:

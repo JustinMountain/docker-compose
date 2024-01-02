@@ -1,4 +1,4 @@
-version: "2.1"
+version: "3"
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -8,11 +8,11 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
-      - JELLYFIN_PublishedServerUrl=192.168.1.100
+      - JELLYFIN_PublishedServerUrl=192.168.1.220
     volumes:
-      - ./config:/config
-      - ./media/TV:/data/tvshows
-      - ./media/Movies:/data/movies
+      - ./config-jellyfin:/config
+      - /media/brontosaurnas/TV:/data/tvshows
+      - /media/brontosaurnas/Movies:/data/movies
     ports:
       - 8096:8096
       - 8920:8920 #optional

@@ -13,8 +13,21 @@ services:
       - ./config-jellyfin:/config
       - /media/brontosaurnas/TV:/data/tvshows
       - /media/brontosaurnas/Movies:/data/movies
+      - /media/brontosaurnas/Portuguese/Movies:/data/pt-movies
+      - /media/brontosaurnas/Portuguese/TV:/data/pt-tvshows
     ports:
       - 8096:8096
       - 8920:8920 #optional
       - 7359:7359/udp
       - 1900:1900/udp #optional
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+    ports:
+      - 5055:5055
+    volumes:
+      - /config-jellyseerr:/app/config
+    restart: unless-stopped

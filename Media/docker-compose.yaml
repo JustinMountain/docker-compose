@@ -9,7 +9,7 @@ services:
       - VPN_SERVICE_PROVIDER=nordvpn
       - OPENVPN_USER=${OPENVPN_USER}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - SERVER_COUNTRIES=${COUNTRY}
+      - SERVER_COUNTRIES=Brazil
       - TZ=${TZ}
     ports:
       - 8888:8888/tcp # HTTP proxy
@@ -32,6 +32,17 @@ services:
     volumes:
       - ./config-deluge:/config
       - /home/servarr/downloads:/downloads
+    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    network_mode: "service:gluetun"
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=${TZ}
     restart: unless-stopped
 
   prowlarr:
@@ -86,4 +97,37 @@ services:
       - ./config-bazarr:/config
       - /media/brontosaurnas/Movies:/movies #optional
       - /media/brontosaurnas/TV:/tv #optional
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - JELLYFIN_PublishedServerUrl=192.168.1.220
+    volumes:
+      - ./config-jellyfin:/config
+      - /media/brontosaurnas/TV:/data/tvshows
+      - /media/brontosaurnas/Movies:/data/movies
+      - /media/brontosaurnas/Portuguese/Movies:/data/pt-movies
+      - /media/brontosaurnas/Portuguese/TV:/data/pt-tvshows
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+    ports:
+      - 5055:5055
+    volumes:
+      - ./config-jellyseerr:/app/config
     restart: unless-stopped
